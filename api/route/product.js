@@ -12,7 +12,7 @@ cloudinary.config({
 });
 
 // get request
-router.get('/',checkAuth,(req,res,next)=>{
+router.get('/',(req,res,next)=>{
   Product.find()
   .exec()
   .then(result=>{
@@ -23,7 +23,7 @@ router.get('/',checkAuth,(req,res,next)=>{
 })
 
 // get by id request
-router.get('/:id',checkAuth,(req,res,next)=>{
+router.get('/:id',(req,res,next)=>{
   const _id = req.params.id;
 
   Product.findById(_id)
@@ -38,40 +38,68 @@ router.get('/:id',checkAuth,(req,res,next)=>{
 })
 
 // post request
-router.post('/',checkAuth,(req,res,next)=>{
-  console.log(req.body);
-  const file = req.files.photo;
-  cloudinary.uploader.upload(file.tempFilePath,(err,result)=>{
-    console.log(result);
-    product = new Product({
-      _id: new mongoose.Types.ObjectId,
-      code:req.body.code,
-      title:req.body.title,
-      description:req.body.description,
-      mrp:req.body.mrp,
-      sp:req.body.sp,
-      discountPercent:req.body.discountPercent,
-      imagePath:result.url
-  });
-  product.save()
-  .then(result=>{
-      console.log(result);
-      res.status(200).json({
-          new_product:result
+// router.post('/',checkAuth,(req,res,next)=>{
+//   console.log(req.body);
+//   const file = req.files.photo;
+//   cloudinary.uploader.upload(file.tempFilePath,(err,result)=>{
+//     console.log(result);
+//     product = new Product({
+//       _id: new mongoose.Types.ObjectId,
+//       code:req.body.code,
+//       title:req.body.title,
+//       description:req.body.description,
+//       mrp:req.body.mrp,
+//       sp:req.body.sp,
+//       discountPercent:req.body.discountPercent,
+//       imagePath:result.url
+//   });
+//   product.save()
+//   .then(result=>{
+//       console.log(result);
+//       res.status(200).json({
+//           new_product:result
+//       })
+//   })
+//   .catch(err=>{
+//       console.log(err);
+//       res.status(500).json({
+//           Error:err
+//       })
+//   })
+//   });
+
+// })
+
+router.post('/',(req,res,next)=>
+{
+  product = new Product({
+          _id: new mongoose.Types.ObjectId,
+          code:req.body.code,
+          title:req.body.title,
+          description:req.body.description,
+          mrp:req.body.mrp,
+          sp:req.body.sp,
+          discountPercent:req.body.discountPercent,
+          imagePath:''
+      });
+      product.save()
+      .then(result=>{
+          console.log(result);
+          res.status(200).json({
+              new_product:result
+          })
       })
-  })
-  .catch(err=>{
-      console.log(err);
-      res.status(500).json({
-          Error:err
+      .catch(err=>{
+          console.log(err);
+          res.status(500).json({
+              Error:err
+          })
       })
-  })
-  });
 
 })
 
 // delete request
-router.delete('/:id',checkAuth,(req,res,next)=>{
+router.delete('/:id',(req,res,next)=>{
   Product.remove({_id:req.params.id})
   .then(result=>{
     res.status(200).json({
@@ -87,7 +115,7 @@ router.delete('/:id',checkAuth,(req,res,next)=>{
 })
 
 // put request
-router.put('/:id',checkAuth,(req,res,next)=>{
+router.put('/:id',(req,res,next)=>{
   console.log(req.params.id);
   Product.findOneAndUpdate({_id:req.params.id},{
     $set:{
